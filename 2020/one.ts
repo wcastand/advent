@@ -1,7 +1,7 @@
-import { getinput } from './utils'
+import { getinput } from '../utils'
 
+const lines = getinput(__dirname, './one.txt')
 function one() {
-  const lines = getinput('./one.txt')
   let res = 0
   for (let i = 0; i < lines.length; ++i) {
     const v = lines[i]
@@ -12,10 +12,9 @@ function one() {
       }
     }
   }
-  console.log(res)
+  console.log('one:', res)
 }
 function two() {
-  const lines = getinput('./one.txt')
   let res = 0
   for (let i = 0; i < lines.length; ++i) {
     const v = lines[i]
@@ -28,8 +27,8 @@ function two() {
       }
     }
   }
-  console.log(res)
+  console.log('two:', res)
 }
 
-// one()
+one()
 two()
