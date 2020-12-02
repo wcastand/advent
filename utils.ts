@@ -13,19 +13,28 @@ export function getinput(dir, src, parse = true, reg = /\n/gim) {
   return res
 }
 
-function getValue(mode: number, value: number, entries: number[]) {
+export function getValue(mode: number, value: number, entries: number[]) {
   return mode === 1 ? value : entries[value]
 }
 
-export function intcode(values: number[], input: number) {
-  let v = values
-  let i = 0
+export function intcode(
+  values: number[],
+  input: number,
+  setting: number,
+  index: number = 0,
+  out: number = 0
+): [number, number, number[], boolean, boolean] {
+  let firstInput = true
+  let output = out
+  let v = Array.from([...values])
+  let i = index
   let done = false
+
   while (!done && i < v.length) {
     const instruction = v[i]
     const op = Math.floor(instruction % 100)
-    const mode1 = Math.floor((instruction % 1000) / 100)
-    const mode2 = Math.floor((instruction % 10000) / 1000)
+    const mode1 = Math.floor((instruction / 100) % 100)
+    const mode2 = Math.floor(instruction / 1000)
 
     let f = 0,
       s = 0,
@@ -50,15 +59,18 @@ export function intcode(values: number[], input: number) {
         break
       case 3:
         out = v[i + 1]
-        // console.log(op, out)
-        v[out] = input
+        // console.log(op, out, firstInput)
+        if (firstInput) {
+          firstInput = false
+          v[out] = setting
+        } else v[out] = input
         i += 2
         break
       case 4:
         const p = getValue(mode1, v[i + 1], v)
-        console.log('out', p)
-        i += 2
-        break
+        // console.log('out', p)
+        output = p
+        return [p, i + 2, v, firstInput, done]
       case 5:
         f = getValue(mode1, v[i + 1], v)
         s = getValue(mode2, v[i + 2], v)
@@ -91,9 +103,10 @@ export function intcode(values: number[], input: number) {
         break
       default:
         if (op !== 99) console.log('unknown', op)
+        // console.log('end', output)
         done = true
         break
     }
   }
-  return v
+  return [output, i, v, firstInput, done]
 }
