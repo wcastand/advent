@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "start": "node-dev --clear --notify=false",
     "dev": "node-dev --respawn --clear --notify=false"
   },
   "devDependencies": {
