@@ -1,17 +1,24 @@
-import { getinput } from '../utils'
-import { getValue } from './intcode'
+export function getValue(mode: number, value: number, entries: number[]) {
+  return mode === 1 ? value : entries[value]
+}
 
-const entries = getinput(__dirname, './two.txt', true, /\,/gim)
-
-function intcode(values: number[], input: number) {
-  let v = values
-  let output = 0
-  let i = 0
+export function intcode(
+  values: number[],
+  input: number,
+  setting: number,
+  index: number = 0,
+  out: number = 0
+): [number, number, number[], boolean, boolean] {
+  let firstInput = true
+  let output = out
+  let v = Array.from([...values])
+  let i = index
   let done = false
+
   while (!done && i < v.length) {
     const instruction = v[i]
     const op = Math.floor(instruction % 100)
-    const mode1 = Math.floor((instruction / 100) % 10)
+    const mode1 = Math.floor((instruction / 100) % 100)
     const mode2 = Math.floor(instruction / 1000)
 
     let f = 0,
@@ -23,6 +30,7 @@ function intcode(values: number[], input: number) {
         f = getValue(mode1, v[i + 1], v)
         s = getValue(mode2, v[i + 2], v)
         out = v[i + 3]
+        // console.log(op, f, s, out)
         v[out] = f + s
         i += 4
         break
@@ -30,28 +38,35 @@ function intcode(values: number[], input: number) {
         f = getValue(mode1, v[i + 1], v)
         s = getValue(mode2, v[i + 2], v)
         out = v[i + 3]
+        // console.log(op, f, s, out)
         v[out] = f * s
         i += 4
         break
       case 3:
         out = v[i + 1]
-        v[out] = input
+        // console.log(op, out, firstInput)
+        if (firstInput) {
+          firstInput = false
+          v[out] = setting
+        } else v[out] = input
         i += 2
         break
       case 4:
         const p = getValue(mode1, v[i + 1], v)
+        // console.log('out', p)
         output = p
-        i += 2
-        break
+        return [p, i + 2, v, firstInput, done]
       case 5:
         f = getValue(mode1, v[i + 1], v)
         s = getValue(mode2, v[i + 2], v)
+        // console.log(op, f, s, out)
         if (f !== 0) i = s
         else i += 3
         break
       case 6:
         f = getValue(mode1, v[i + 1], v)
         s = getValue(mode2, v[i + 2], v)
+        // console.log(op, f, s, out)
         if (f === 0) i = s
         else i += 3
         break
@@ -59,6 +74,7 @@ function intcode(values: number[], input: number) {
         f = getValue(mode1, v[i + 1], v)
         s = getValue(mode2, v[i + 2], v)
         out = v[i + 3]
+        // console.log(op, f, s, out)
         v[out] = f < s ? 1 : 0
         i += 4
         break
@@ -66,39 +82,16 @@ function intcode(values: number[], input: number) {
         f = getValue(mode1, v[i + 1], v)
         s = getValue(mode2, v[i + 2], v)
         out = v[i + 3]
+        // console.log(op, f, s, out)
         v[out] = f === s ? 1 : 0
         i += 4
         break
       default:
         if (op !== 99) console.log('unknown', op)
+        // console.log('end', output)
         done = true
         break
     }
   }
-  return [output || v[0], v]
+  return [output, i, v, firstInput, done]
 }
-
-function one() {
-  let v = Array.from(entries)
-  v[1] = 12
-  v[2] = 2
-  const res = intcode(v, 0)[0]
-  console.log('one:', res)
-}
-function two() {
-  for (let i = 0; i < 100; ++i) {
-    for (let j = 0; j < 100; ++j) {
-      let v = Array.from(entries)
-      v[1] = i
-      v[2] = j
-      const values = intcode(v, 0)[1]
-      if (values[0] === 19690720) {
-        console.log('two: ', 100 * i + j)
-        break
-      }
-    }
-  }
-}
-
-one()
-two()

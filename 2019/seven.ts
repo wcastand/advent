@@ -1,4 +1,5 @@
-import { intcode, getinput } from '../utils'
+import { getinput } from '../utils'
+import { intcode } from './intcode'
 
 const code = getinput(__dirname, './seven.txt', true, /\,/gim)
 type Settings = [number, number, number, number, number]

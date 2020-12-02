@@ -1,4 +1,5 @@
-import { getValue, getinput } from '../utils'
+import { getinput } from '../utils'
+import { getValue } from './intcode'
 
 const entries = getinput(__dirname, './five.txt', true, /\,/gim)
 
