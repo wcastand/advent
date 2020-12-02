@@ -155,6 +155,11 @@ source-map@^0.6.0:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
 
+terminal-canvas@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/terminal-canvas/-/terminal-canvas-3.1.2.tgz#a6a43450f33f3d17d942be4a5454c426f9f6c241"
+  integrity sha512-PEFCNFIh1QwStlY+1x8CSj25FxnIv6z/Sbe8Zkh5dWfdCmwqhpRue9NpP2u75gE/JoW3dzT2QCXNC4xT9tVdcw==
+
 ts-node@^9.0.0:
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-9.0.0.tgz#e7699d2a110cc8c0d3b831715e417688683460b3"
