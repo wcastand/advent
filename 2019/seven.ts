@@ -1,5 +1,90 @@
 import { getinput } from '../utils'
-import { intcode } from './intcode'
+import { getValue } from './intcode'
+
+function intcode(
+  values: number[],
+  input: number,
+  setting: number,
+  index: number = 0,
+  out: number = 0
+): [number, number, number[], boolean, boolean] {
+  let firstInput = true
+  let output = out
+  let v = Array.from([...values])
+  let i = index
+  let done = false
+
+  while (!done && i < v.length) {
+    const instruction = v[i]
+    const op = Math.floor(instruction % 100)
+    const mode1 = Math.floor((instruction / 100) % 100)
+    const mode2 = Math.floor(instruction / 1000)
+
+    let f = 0,
+      s = 0,
+      out = 0
+
+    switch (op) {
+      case 1:
+        f = getValue(mode1, v[i + 1], v)
+        s = getValue(mode2, v[i + 2], v)
+        out = v[i + 3]
+        v[out] = f + s
+        i += 4
+        break
+      case 2:
+        f = getValue(mode1, v[i + 1], v)
+        s = getValue(mode2, v[i + 2], v)
+        out = v[i + 3]
+        v[out] = f * s
+        i += 4
+        break
+      case 3:
+        out = v[i + 1]
+        if (firstInput) {
+          firstInput = false
+          v[out] = setting
+        } else v[out] = input
+        i += 2
+        break
+      case 4:
+        const p = getValue(mode1, v[i + 1], v)
+        output = p
+        return [p, i + 2, v, firstInput, done]
+      case 5:
+        f = getValue(mode1, v[i + 1], v)
+        s = getValue(mode2, v[i + 2], v)
+        if (f !== 0) i = s
+        else i += 3
+        break
+      case 6:
+        f = getValue(mode1, v[i + 1], v)
+        s = getValue(mode2, v[i + 2], v)
+        if (f === 0) i = s
+        else i += 3
+        break
+      case 7:
+        f = getValue(mode1, v[i + 1], v)
+        s = getValue(mode2, v[i + 2], v)
+        out = v[i + 3]
+        v[out] = f < s ? 1 : 0
+        i += 4
+        break
+      case 8:
+        f = getValue(mode1, v[i + 1], v)
+        s = getValue(mode2, v[i + 2], v)
+        out = v[i + 3]
+        v[out] = f === s ? 1 : 0
+        i += 4
+        break
+      default:
+        if (op !== 99) console.log('unknown', op)
+        done = true
+        break
+    }
+  }
+  return [output, i, v, firstInput, done]
+}
 
 const code = getinput(__dirname, './seven.txt', true, /\,/gim)
 type Settings = [number, number, number, number, number]
@@ -15,31 +100,19 @@ function run(settings: Settings) {
 function run2(settings: Settings): number {
   let input = 0
   let A = intcode(code, input, settings[0], 0, 0)
-  // console.log(A[0])
   let B = intcode(code, A[0], settings[1], 0, 0)
-  // console.log(B[0])
   let C = intcode(code, B[0], settings[2], 0, 0)
-  // console.log(C[0])
   let D = intcode(code, C[0], settings[3], 0, 0)
-  // console.log(D[0])
   let E = intcode(code, D[0], settings[4], 0, 0)
-  // console.log(E[0])
 
   while (true) {
-    // const [output, i, v, first, status] = intcode(m[0], m[1], m[2], m[3], m[4])
     A = intcode(A[2], E[0], E[0], A[1], A[0])
-    // console.log(A[0], A[4])
     B = intcode(B[2], A[0], A[0], B[1], B[0])
-    // console.log(B[0], B[4])
     C = intcode(C[2], B[0], B[0], C[1], C[0])
-    // console.log(C[0], C[4])
     D = intcode(D[2], C[0], C[0], D[1], D[0])
-    // console.log(D[0], D[4])
     E = intcode(E[2], D[0], D[0], E[1], E[0])
-    // console.log(E[0], E[4])
     if (E[4]) break
   }
-  // console.log(A, B, C, D, E)
   return E[0]
 }
 

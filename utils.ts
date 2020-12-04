@@ -1,11 +1,11 @@
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
 
-export function getinput(dir: string, src: string): number[]
-export function getinput(dir: string, src: string, parse: true): number[]
-export function getinput(dir: string, src: string, parse: true, reg: RegExp): number[]
-export function getinput(dir: string, src: string, parse: false): string[]
-export function getinput(dir: string, src: string, parse: false, reg: RegExp): string[]
+export function getinput<T = number>(dir: string, src: string): T[]
+export function getinput<T = number>(dir: string, src: string, parse: true): T[]
+export function getinput<T = number>(dir: string, src: string, parse: true, reg: RegExp): T[]
+export function getinput<T = string>(dir: string, src: string, parse: false): T[]
+export function getinput<T = string>(dir: string, src: string, parse: false, reg: RegExp): T[]
 export function getinput(dir, src, parse = true, reg = /\n/gim) {
   const content = readFileSync(resolve(dir, src), 'utf-8')
   const res: string[] = content.split(reg)
