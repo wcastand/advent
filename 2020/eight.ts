@@ -69,5 +69,5 @@ function two() {
   console.log('two:', res)
 }
 
-// one()
+one()
 two()
